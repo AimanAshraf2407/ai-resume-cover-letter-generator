@@ -1,0 +1,9 @@
+google-genai
+fastapi
+uvicorn
+pydantic
+python-dotenv
+pytest
+pandas
+jinja2
+weasyprint

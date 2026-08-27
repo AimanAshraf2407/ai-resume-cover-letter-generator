@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+
+# Node / Web UI
+node_modules/
+dist/
+.next/
+
+# Secrets & Local Config
+.env
+*.key
+.DS_Store
