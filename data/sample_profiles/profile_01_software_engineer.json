@@ -1,0 +1,50 @@
+{
+  "full_name": "Alex Chen",
+  "contact": {
+    "email": "alex.chen@example.com",
+    "phone": "+60 12-345 6789",
+    "linkedin": "linkedin.com/in/alexchen-dev",
+    "github": "github.com/alexchen-dev"
+  },
+  "summary": "Junior Software Engineer with practical experience in building RESTful APIs using Python and modern web interfaces in React.",
+  "education": [
+    {
+      "degree": "Bachelor of Information Technology (Honours)",
+      "institution": "Multimedia University",
+      "graduation_year": "2026",
+      "cgpa": "3.65"
+    }
+  ],
+  "technical_skills": [
+    "Python",
+    "FastAPI",
+    "JavaScript",
+    "React",
+    "SQL",
+    "Git",
+    "Docker Basics"
+  ],
+  "experience": [
+    {
+      "role": "Software Engineering Intern",
+      "company": "TechSolutions Sdn Bhd",
+      "duration": "March 2025 - August 2025",
+      "highlights": [
+        "Developed backend endpoints using FastAPI and PostgreSQL, reducing response latency by 15%.",
+        "Integrated third-party authentication and payment gateway APIs.",
+        "Collaborated with frontend developers to resolve UI state management issues in React."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "AI Content Summarizer",
+      "tech_stack": "Python, Gemini API, Streamlit",
+      "description": "Built a web tool that ingests long PDF reports and generates structured executive summaries using prompt engineering."
+    }
+  ],
+  "certifications": [
+    "Google Cloud Cybersecurity Certificate",
+    "AWS Certified Cloud Practitioner"
+  ]
+}

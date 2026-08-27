@@ -1,0 +1,19 @@
+Job Title: Junior AI / Software Engineer
+Company: CloudNexus Technologies
+Location: Kuala Lumpur / Hybrid
+
+About the Role:
+We are seeking an ambitious Junior AI / Software Engineer to join our core product team. You will be responsible for building automated content pipelines, connecting large language models (LLMs) to client applications, and building robust RESTful APIs.
+
+Key Responsibilities:
+- Design, test, and optimize prompts for generative AI models.
+- Implement and maintain backend API microservices using Python (FastAPI / Flask).
+- Integrate modern frontend interfaces with backend AI services.
+- Write unit tests and evaluate model performance for hallucination control and keyword matching.
+
+Requirements:
+- Bachelor's degree in Computer Science, Information Technology, or a related field.
+- Hands-on proficiency with Python and web development frameworks.
+- Familiarity with LLM APIs (e.g., Gemini, OpenAI) and prompt engineering principles.
+- Experience using Git version control and collaborative branching workflows.
+- Strong analytical skills and a problem-solving mindset.
