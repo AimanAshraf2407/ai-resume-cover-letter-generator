@@ -1,15 +1,12 @@
-import sys
-import traceback
-from pathlib import Path
-
-# Ensure root directory is in sys.path
-sys.path.append(str(Path(__file__).resolve().parent.parent))
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from models.generator import generate_resume, generate_cover_letter
 
-app = FastAPI(title="AI Resume & Cover Letter Generator API")
+app = FastAPI(
+    title="AI Resume & Cover Letter Generator API",
+    description="Backend API powered by Google Gemini 3.6 Flash",
+    version="1.0.0"
+)
 
 class GenerationRequest(BaseModel):
     user_profile: str
@@ -19,17 +16,35 @@ class GenerationResponse(BaseModel):
     resume: str
     cover_letter: str
 
+
+@app.get("/")
+def read_root():
+    """Root endpoint health check."""
+    return {
+        "status": "online",
+        "message": "AI Resume & Cover Letter Generator API is running"
+    }
+
+
 @app.post("/api/generate", response_model=GenerationResponse)
-async def handle_generation(payload: GenerationRequest):
-    if not payload.user_profile.strip() or not payload.job_description.strip():
-        raise HTTPException(status_code=400, detail="User profile and Job description cannot be empty.")
+def generate_documents(request: GenerationRequest):
+    if not request.user_profile.strip() or not request.job_description.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="user_profile and job_description cannot be empty strings."
+        )
     
     try:
-        res = generate_resume(payload.user_profile, payload.job_description)
-        cov = generate_cover_letter(payload.user_profile, payload.job_description)
-        return GenerationResponse(resume=res, cover_letter=cov)
+        resume = generate_resume(
+            user_profile=request.user_profile,
+            job_description=request.job_description,
+            temperature=0.2
+        )
+        cover_letter = generate_cover_letter(
+            user_profile=request.user_profile,
+            job_description=request.job_description,
+            temperature=0.5
+        )
+        return GenerationResponse(resume=resume, cover_letter=cover_letter)
     except Exception as e:
-        print("\n--- ERROR IN GENERATION ---")
-        traceback.print_exc()
-        print("----------------------------\n")
         raise HTTPException(status_code=500, detail=str(e))
