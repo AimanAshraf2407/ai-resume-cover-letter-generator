@@ -1,7 +1,10 @@
 import os
+import time
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from google.genai.errors import ServerError
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 load_dotenv()
 
@@ -21,37 +24,49 @@ Write a compelling, tailored cover letter based on the candidate's profile and j
 Maintain a professional tone and keep the length between 250 and 400 words."""
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    retry=retry_if_exception_type(ServerError),
+    reraise=True,
+)
 def generate_resume(user_profile: str, job_description: str, temperature: float = 0.3) -> str:
     prompt_text = (
         f"Candidate Profile:\n{user_profile}\n\n"
         f"Target Job Description:\n{job_description}\n\n"
         "Generate the tailored resume in Markdown:"
     )
-    
+
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model="gemini-3.6-flash",  # Correct active model
         contents=prompt_text,
         config=types.GenerateContentConfig(
             system_instruction=RESUME_SYSTEM_PROMPT,
-            temperature=temperature,  # <--- uses the passed temperature parameter
+            temperature=temperature,
         ),
     )
     return response.text or ""
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    retry=retry_if_exception_type(ServerError),
+    reraise=True,
+)
 def generate_cover_letter(user_profile: str, job_description: str, temperature: float = 0.5) -> str:
     prompt_text = (
         f"Candidate Profile:\n{user_profile}\n\n"
         f"Target Job Description:\n{job_description}\n\n"
         "Generate the tailored cover letter:"
     )
-    
+
     response = client.models.generate_content(
-        model="gemini-3.6-flash",
+        model="gemini-3.6-flash",  # Correct active model
         contents=prompt_text,
         config=types.GenerateContentConfig(
             system_instruction=COVER_LETTER_SYSTEM_PROMPT,
-            temperature=temperature,  # <--- uses the passed temperature parameter
+            temperature=temperature,
         ),
     )
     return response.text or ""
