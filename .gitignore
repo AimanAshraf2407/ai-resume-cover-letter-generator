@@ -12,4 +12,4 @@ dist/
 # Secrets & Local Config
 .env
 *.key
-.DS_Store
+.DS_Store*.pdf
