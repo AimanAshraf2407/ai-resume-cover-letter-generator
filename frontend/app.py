@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import requests
 import json
@@ -12,7 +13,11 @@ if str(ROOT_DIR) not in sys.path:
 from src.exporter import export_to_pdf, export_to_text
 from src.evaluation import calculate_ats_metrics
 
-API_BASE_URL = "http://127.0.0.1:8000"
+# Fetch backend URL from Streamlit Cloud Secrets, OS Environment, or default to local
+if "API_BASE_URL" in st.secrets:
+    API_BASE_URL = st.secrets["API_BASE_URL"]
+else:
+    API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 
 st.set_page_config(page_title="AI Resume & Cover Letter Generator", layout="wide")
 
