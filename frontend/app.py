@@ -4,6 +4,8 @@ import requests
 import json
 from pathlib import Path
 import sys
+import os
+API_BASE_URL = os.getenv("API_BASE_URL", "https://your-api.onrender.com")
 
 # Ensure root directory is accessible for local imports
 ROOT_DIR = Path(__file__).resolve().parent.parent
