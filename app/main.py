@@ -1,64 +1,65 @@
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+
 from models.generator import generate_resume, generate_cover_letter
+from src.evaluation import calculate_ats_metrics
 
-app = FastAPI(
-    title="AI Resume & Cover Letter Generator API",
-    description="Backend API powered by Google Gemini 3.6 Flash",
-    version="1.0.0"
-)
+app = FastAPI(title="AI Resume & Cover Letter Generator API")
+
+# Handles both HEAD and GET requests for health probes (prevents Render 405 errors)
+@app.api_route("/", methods=["GET", "HEAD"])
+async def root():
+    return {"status": "ok", "message": "Service is running"}
 
 
-class GenerationRequest(BaseModel):
+class GenerateRequest(BaseModel):
     user_profile: str
     job_description: str
-    document_type: Optional[str] = "all"  # "all", "resume", or "cover_letter"
+    document_type: str = "both"  # Options: "resume", "cover_letter", "both"
+    temperature: Optional[float] = 0.2
 
 
-class GenerationResponse(BaseModel):
-    resume: Optional[str] = ""
-    cover_letter: Optional[str] = ""
+class GenerateResponse(BaseModel):
+    resume: Optional[str] = None
+    cover_letter: Optional[str] = None
+    ats_score: Optional[float] = None
+    evaluation_metrics: Optional[dict] = None
 
 
-@app.get("/")
-def read_root():
-    """Root endpoint health check."""
-    return {
-        "status": "online",
-        "message": "AI Resume & Cover Letter Generator API is running"
-    }
+@app.post("/api/generate", response_model=GenerateResponse)
+async def generate_documents(payload: GenerateRequest):
+    if not payload.user_profile.strip() or not payload.job_description.strip():
+        raise HTTPException(status_code=400, detail="Profile and Job Description cannot be empty.")
 
-
-@app.post("/api/generate", response_model=GenerationResponse)
-def generate_documents(request: GenerationRequest):
-    if not request.user_profile.strip() or not request.job_description.strip():
-        raise HTTPException(
-            status_code=400,
-            detail="user_profile and job_description cannot be empty strings."
-        )
+    resume_text = None
+    cover_letter_text = None
 
     try:
-        resume_text = ""
-        cover_letter_text = ""
-
-        # Generate Resume if "all" or specifically "resume" is requested
-        if request.document_type in ["resume", "all", None]:
+        if payload.document_type in ["resume", "both"]:
             resume_text = generate_resume(
-                user_profile=request.user_profile,
-                job_description=request.job_description,
-                temperature=0.2
+                payload.user_profile,
+                payload.job_description,
+                temperature=payload.temperature
             )
 
-        # Generate Cover Letter if "all" or specifically "cover_letter" is requested
-        if request.document_type in ["cover_letter", "all", None]:
+        if payload.document_type in ["cover_letter", "both"]:
             cover_letter_text = generate_cover_letter(
-                user_profile=request.user_profile,
-                job_description=request.job_description,
-                temperature=0.7
+                payload.user_profile,
+                payload.job_description,
+                temperature=payload.temperature
             )
 
-        return GenerationResponse(resume=resume_text, cover_letter=cover_letter_text)
+        eval_text = resume_text if resume_text else cover_letter_text
+        metrics = calculate_ats_metrics(payload.job_description, eval_text) if eval_text else {}
+
+        return GenerateResponse(
+            resume=resume_text,
+            cover_letter=cover_letter_text,
+            ats_score=metrics.get("recall"),
+            evaluation_metrics=metrics
+        )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
