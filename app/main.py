@@ -44,14 +44,14 @@ async def generate_documents(payload: GenerateRequest):
             resume_text = generate_resume(
                 payload.user_profile,
                 payload.job_description,
-                temperature=payload.temperature,
+                temperature=payload.temperature, # type: ignore
             )
 
         if payload.document_type in ["cover_letter", "both"]:
             cover_letter_text = generate_cover_letter(
                 payload.user_profile,
                 payload.job_description,
-                temperature=payload.temperature,
+                temperature=payload.temperature, # type: ignore
             )
 
         eval_text = resume_text if resume_text else cover_letter_text
